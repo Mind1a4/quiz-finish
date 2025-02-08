@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quiz Game</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+      }
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-color: #f4f4f4;
+      }
+      .quiz-container {
+        width: 50%;
+        max-width: 600px;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        text-align: center;
+      }
+      .question {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 15px;
+      }
+      .answers div {
+        padding: 10px;
+        margin: 5px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        cursor: pointer;
+        background: #f9f9f9;
+        transition: 0.3s;
+      }
+      .answers div:hover {
+        background: #e0e0e0;
+      }
+      .correct {
+        background-color: #d4edda !important;
+        border-color: #28a745;
+      }
+      .incorrect {
+        background-color: #f8d7da !important;
+        border-color: #dc3545;
+      }
+      .score-panel {
+        margin-top: 20px;
+        font-size: 18px;
+        font-weight: bold;
+      }
+      .btn-container {
+        margin-top: 15px;
+        height: 40px;
+      }
+      .btn-container button {
+        padding: 10px 15px;
+        border: none;
+        background: #007bff;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: 0.3s;
+        display: none;
+      }
+      .btn-container button:hover {
+        background: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="quiz-container">
+      <div id="question-container"></div>
+      <div class="score-panel">Score: <span id="score">0</span></div>
+      <div class="btn-container">
+        <button id="next-btn">Next Question</button>
+        <button id="reset-btn">Restart Quiz</button>
+      </div>
+    </div>
+
+    <script>
+      const quizQuestions = [
+        {
+          question: "What is the capital of France?",
+          options: ["Paris", "London", "Berlin", "Madrid"],
+          correctAnswer: "Paris",
+        },
+        {
+          question: "Which planet is known as the Red Planet?",
+          options: ["Earth", "Mars", "Jupiter", "Venus"],
+          correctAnswer: "Mars",
+        },
+        {
+          question: "How many legs does a spider have?",
+          options: ["6", "8", "10", "12"],
+          correctAnswer: "8",
+        },
+      ];
+
+      let currentQuestionIndex = 0;
+      let score = 0;
+
+      const questionContainer = document.getElementById("question-container");
+      const scoreDisplay = document.getElementById("score");
+      const nextButton = document.getElementById("next-btn");
+      const resetButton = document.getElementById("reset-btn");
+
+      function showQuestion() {
+        questionContainer.innerHTML = "";
+
+        if (currentQuestionIndex >= quizQuestions.length) {
+          questionContainer.innerHTML = `<h2>Quiz Completed!</h2><p>Your final score: ${score} / ${quizQuestions.length}</p>`;
+          nextButton.style.display = "none";
+          resetButton.style.display = "block";
+          return;
+        }
+
+        const quiz = quizQuestions[currentQuestionIndex];
+        const questionDiv = document.createElement("div");
+        questionDiv.classList.add("question");
+        questionDiv.textContent = quiz.question;
+
+        const answersDiv = document.createElement("div");
+        answersDiv.classList.add("answers");
+
+        quiz.options.forEach(function (option) {
+          const answerDiv = document.createElement("div");
+          answerDiv.textContent = option;
+
+          answerDiv.addEventListener("click", function () {
+            const otherAnswers = document.querySelectorAll(".answers div");
+
+            if (
+              document.querySelector(".correct") ||
+              document.querySelector(".incorrect")
+            ) {
+              return;
+            }
+
+            if (option === quiz.correctAnswer) {
+              answerDiv.classList.add("correct");
+              score++;
+            } else {
+              answerDiv.classList.add("incorrect");
+              otherAnswers.forEach(function (div) {
+                if (div.textContent === quiz.correctAnswer) {
+                  div.classList.add("correct");
+                }
+              });
+            }
+
+            scoreDisplay.textContent = score;
+            nextButton.style.display = "block";
+          });
+
+          answersDiv.appendChild(answerDiv);
+        });
+
+        questionContainer.appendChild(questionDiv);
+        questionContainer.appendChild(answersDiv);
+      }
+
+      nextButton.addEventListener("click", function () {
+        currentQuestionIndex++;
+        nextButton.style.display = "none";
+        showQuestion();
+      });
+
+      resetButton.addEventListener("click", function () {
+        currentQuestionIndex = 0;
+        score = 0;
+        scoreDisplay.textContent = score;
+        resetButton.style.display = "none";
+        nextButton.style.display = "block";
+        showQuestion();
+      });
+
+      showQuestion();
+    </script>
+  </body>
+</html>
